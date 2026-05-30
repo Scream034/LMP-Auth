@@ -4,7 +4,19 @@ A lightweight browser extension for Chrome, Edge, Brave, and Opera that securely
 
 ## How to Install (Developer Mode)
 1. Download and extract the `.zip` release.
-2. Open your browser and go to the extensions page ([Chrome](chrome://extensions/) or [Edge](edge://extensions/)).
+2. Open your browser and go to the extensions page:
+```
+edge://extensions/
+```
+```
+chrome://extensions/
+```
+```
+opera://extensions/
+```
+```
+firefox://extensions/
+```
 3. Enable **Developer mode** in the top right corner.
 4. Click **Load unpacked** and select the extracted folder.
 5. Pin the extension to your toolbar!
