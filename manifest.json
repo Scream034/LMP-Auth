@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "LMP Auth",
+  "version": "1.0.0",
+  "description": "Seamlessly send YouTube Music session to the LMP desktop app.",
+  "permissions": [
+    "cookies"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Login to LMP"
+  },
+  "icons": {
+    "128": "icon.png"
+  }
+}
