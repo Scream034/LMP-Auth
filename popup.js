@@ -1,4 +1,10 @@
-const TARGET_COOKIES = ["SAPISID", "SID", "HSID", "SSID", "APISID", "__Secure-1PSID", "__Secure-3PSID", "__Secure-1PSIDTS"];
+// TARGET_COOKIES теперь включает LOGIN_INFO и PREF для точной идентификации выбранного канала
+const TARGET_COOKIES = [
+  "SAPISID", "SID", "HSID", "SSID", "APISID",
+  "__Secure-1PSID", "__Secure-3PSID", "__Secure-1PSIDTS",
+  "LOGIN_INFO", "PREF"
+];
+
 const LMP_PORT = 40340;
 
 const $btn = document.getElementById('sendBtn');
@@ -9,14 +15,16 @@ $btn.onclick = async () => {
   showStatus('Processing...', '');
 
   try {
-    const cookies = await chrome.cookies.getAll({ domain: ".youtube.com" });
+    // Параметр domain: "youtube.com" соберет куки со всех поддоменов (и www, и music)
+    const cookies = await chrome.cookies.getAll({ domain: "youtube.com" });
+
     const authCookies = cookies
       .filter(c => TARGET_COOKIES.includes(c.name))
       .map(c => `${c.name}=${c.value}`)
       .join('; ');
 
     if (!authCookies.includes("SAPISID")) {
-      throw new Error("Log in to YouTube Music first!");
+      throw new Error("Log in to YouTube or YouTube Music first!");
     }
 
     try {
@@ -25,7 +33,7 @@ $btn.onclick = async () => {
         headers: { 'Content-Type': 'text/plain' },
         body: authCookies
       });
-      
+
       if (res.ok) {
         showStatus('Success! You can close this.', 'ok');
         setTimeout(() => window.close(), 1500);
