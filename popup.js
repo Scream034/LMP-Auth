@@ -28,9 +28,13 @@ $btn.onclick = async () => {
     }
 
     try {
+      // Отправляем POST на локальный сервер LMP вместе с заголовком версии нашего расширения
       const res = await fetch(`http://127.0.0.1:${LMP_PORT}/api/auth`, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
+        headers: { 
+          'Content-Type': 'text/plain',
+          'X-Extension-Version': chrome.runtime.getManifest().version
+        },
         body: authCookies
       });
 
