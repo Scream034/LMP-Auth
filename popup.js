@@ -11,10 +11,18 @@ const BASE_URL = `http://127.0.0.1:${LMP_PORT}`;
 const PING_URL = `${BASE_URL}/api/ping`;
 const AUTH_URL = `${BASE_URL}/api/auth`;
 
-//  i18n 
+// YouTube URLs for cookie retrieval via url-based matching
+const YT_URLS = [
+  'https://www.youtube.com',
+  'https://music.youtube.com',
+  'https://youtube.com',
+  'https://accounts.google.com'
+];
+
+// i18n
 const t = (key, ...subs) => chrome.i18n.getMessage(key, subs) || key;
 
-//  DOM 
+// DOM
 const sendBtn = document.getElementById('sendBtn');
 const statusEl = document.getElementById('status');
 const serverDot = document.getElementById('serverDot');
@@ -22,7 +30,7 @@ const serverText = document.getElementById('serverText');
 const legendToggle = document.getElementById('legendToggle');
 const legendBody = document.getElementById('legendBody');
 
-//  Static i18n 
+// Static i18n
 document.getElementById('desc').textContent = t('desc');
 sendBtn.textContent = t('btnSend');
 legendToggle.textContent = t('legendToggle');
@@ -33,10 +41,10 @@ document.getElementById('lg-ok').textContent = t('legendOk');
 document.getElementById('lg-copied').textContent = t('legendCopied');
 document.getElementById('lg-nologin').textContent = t('legendNoLogin');
 
-//  Legend toggle 
+// Legend toggle
 legendToggle.addEventListener('click', () => legendBody.classList.toggle('open'));
 
-//  Helpers 
+// Helpers
 /**
  * @param {string} text
  * @param {'ok'|'warn'|'err'|''} kind
@@ -57,25 +65,54 @@ function setServerStatus(kind) {
         t('statusNotFound');
 }
 
-//  Collect cookies from both youtube.com and music.youtube.com 
+// Collect cookies from ALL YouTube/Google domains + ALL cookie stores
 async function collectAuthCookies() {
-  const [ytCookies, ytmCookies] = await Promise.all([
-    chrome.cookies.getAll({ domain: 'youtube.com' }),
-    chrome.cookies.getAll({ domain: 'music.youtube.com' })
-  ]);
-
-  // Deduplicate by name — prefer youtube.com value (arrived first)
   const seen = new Map();
-  for (const c of [...ytCookies, ...ytmCookies]) {
-    if (TARGET_COOKIES.includes(c.name) && !seen.has(c.name)) {
-      seen.set(c.name, c.value);
+
+  // 1. Enumerate all cookie stores (default "0" + incognito "1" etc.)
+  let storeIds = ['0'];
+  try {
+    const stores = await chrome.cookies.getAllCookieStores();
+    if (stores?.length > 0) {
+      storeIds = stores.map(s => s.id);
     }
+  } catch { /* fallback to default store */ }
+
+  // 2. For each store × each URL — use `url` parameter (not `domain`)
+  //    Chrome matches cookies using its internal domain/path rules
+  for (const storeId of storeIds) {
+    for (const url of YT_URLS) {
+      try {
+        const cookies = await chrome.cookies.getAll({ url, storeId });
+        for (const c of cookies) {
+          if (TARGET_COOKIES.includes(c.name) && !seen.has(c.name)) {
+            seen.set(c.name, c.value);
+          }
+        }
+      } catch { /* skip this combination */ }
+    }
+  }
+
+  // 3. Fallback: get ALL cookies and manually filter by domain
+  //    Catches edge cases where url-based lookup misses some cookies
+  if (!seen.has('SAPISID')) {
+    try {
+      const allCookies = await chrome.cookies.getAll({});
+      for (const c of allCookies) {
+        if (TARGET_COOKIES.includes(c.name) &&
+          !seen.has(c.name) &&
+          (c.domain.endsWith('youtube.com') ||
+            c.domain.endsWith('google.com'))) {
+          seen.set(c.name, c.value);
+        }
+      }
+    } catch { /* ignore */ }
   }
 
   return [...seen.entries()].map(([k, v]) => `${k}=${v}`).join('; ');
 }
 
-//  Ping LMP on popup open 
+// Ping LMP on popup open
 async function checkServer() {
   setServerStatus('checking');
   try {
@@ -91,7 +128,7 @@ async function checkServer() {
 
 checkServer();
 
-//  Main: send cookies 
+// Main: send cookies
 sendBtn.addEventListener('click', async () => {
   sendBtn.disabled = true;
   setStatus(t('statusSending'), '');
@@ -109,7 +146,7 @@ sendBtn.addEventListener('click', async () => {
       return;
     }
 
-    //  Try sending to LMP 
+    // Try sending to LMP
     let sent = false;
     try {
       const res = await fetch(AUTH_URL, {
@@ -126,19 +163,18 @@ sendBtn.addEventListener('click', async () => {
         sent = true;
         setServerStatus('ok');
         setStatus(t('statusOk'), 'ok');
-        // Button stays disabled — task is done, window will close from LMP side
         return;
       }
     } catch {
       /* LMP not reachable — fall through to clipboard */
     }
 
-    //  Clipboard fallback 
+    // Clipboard fallback
     if (!sent) {
       await navigator.clipboard.writeText(authCookies);
       setServerStatus('warn');
       setStatus(t('statusCopied'), 'warn');
-      sendBtn.disabled = false; // Allow retry
+      sendBtn.disabled = false;
     }
 
   } catch (err) {
