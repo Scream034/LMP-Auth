@@ -1,0 +1,26 @@
+{
+  "extName":        { "message": "LMP Auth" },
+  "extDescription": { "message": "Отправляет сессию YouTube Music в десктопное приложение LMP." },
+  "extTitle":       { "message": "Войти в LMP" },
+
+  "desc":           { "message": "Отправьте сессию YouTube Music в приложение Lite Music Player." },
+  "btnSend":        { "message": "Send to LMP" },
+
+  "statusChecking":  { "message": "Проверка соединения с LMP..." },
+  "statusReady":     { "message": "✓ LMP запущен. Нажмите кнопку для отправки." },
+  "statusNotFound":  { "message": "⚠ LMP не найден. Убедитесь, что приложение открыто." },
+  "statusSending":   { "message": "Отправка..." },
+  "statusOk":        { "message": "✓ Готово! Это окно можно закрыть." },
+  "statusCopied":    { "message": "⚠ LMP недоступен напрямую. Куки скопированы — вставьте их в поле в приложении." },
+  "statusNoLogin":   { "message": "✗ Вы не вошли в YouTube. Войдите и попробуйте снова." },
+  "statusError":     { "message": "✗ Ошибка: $details$", "placeholders": { "details": { "content": "$1" } } },
+
+  "legendTitle":    { "message": "Что означают статусы?" },
+  "legendChecking": { "message": "Проверка… — расширение проверяет, открыт ли LMP" },
+  "legendReady":    { "message": "✓ LMP запущен — приложение найдено, готово к отправке" },
+  "legendNotFound": { "message": "⚠ LMP не найден — сначала откройте приложение LMP" },
+  "legendOk":       { "message": "✓ Готово — куки отправлены, закройте попап" },
+  "legendCopied":   { "message": "⚠ Куки скопированы — вставьте их в поле ввода в LMP" },
+  "legendNoLogin":  { "message": "✗ Не вошли — войдите в YouTube и нажмите кнопку снова" },
+  "legendToggle":   { "message": "▸ Что значат статусы?" }
+}

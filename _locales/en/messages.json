@@ -1,0 +1,26 @@
+{
+  "extName":        { "message": "LMP Auth" },
+  "extDescription": { "message": "Seamlessly send YouTube Music session to the LMP desktop app." },
+  "extTitle":       { "message": "Login to LMP" },
+
+  "desc":           { "message": "Send your YouTube Music session to the Lite Music Player desktop app." },
+  "btnSend":        { "message": "Send to LMP" },
+
+  "statusChecking":  { "message": "Checking connection to LMP..." },
+  "statusReady":     { "message": "✓ LMP is running. Press the button to send." },
+  "statusNotFound":  { "message": "⚠ LMP not detected. Make sure the app is open." },
+  "statusSending":   { "message": "Sending..." },
+  "statusOk":        { "message": "✓ Done! You can close this popup." },
+  "statusCopied":    { "message": "⚠ Could not reach LMP directly. Cookies copied to clipboard — paste them in LMP." },
+  "statusNoLogin":   { "message": "✗ Not logged into YouTube. Sign in and try again." },
+  "statusError":     { "message": "✗ Error: $details$", "placeholders": { "details": { "content": "$1" } } },
+
+  "legendTitle":    { "message": "What do statuses mean?" },
+  "legendChecking": { "message": "Checking… — verifying LMP is open" },
+  "legendReady":    { "message": "✓ LMP is running — app detected, ready to send" },
+  "legendNotFound": { "message": "⚠ LMP not detected — open the LMP app first" },
+  "legendOk":       { "message": "✓ Done — cookies sent, close the popup" },
+  "legendCopied":   { "message": "⚠ Cookies copied — paste them in the LMP field below" },
+  "legendNoLogin":  { "message": "✗ Not logged in — sign in to YouTube and retry" },
+  "legendToggle":   { "message": "▸ Status guide" }
+}
